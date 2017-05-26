@@ -78,6 +78,12 @@ module PathHelpers
   # Path after the current_user locale has been changed OR
   # the new locale path, if anonymous user.
   def path_after_locale_change(locale:, redirect_uri:)
-    "/#{locale}/#{redirect_uri}"
+    old_path = Rails.application.routes.recognize_path redirect_uri
+    new_path = Rails.application.routes.recognize_path "/#{locale}/#{redirect_uri}"
+    if old_path[:controller] == new_path[:controller] && old_path[:action] == new_path[:action]
+      "/#{locale}/#{redirect_uri}"
+    else
+      "/#{redirect_uri}"
+    end
   end
 end
